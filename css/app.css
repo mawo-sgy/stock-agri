@@ -76,6 +76,8 @@ h1, h2, h3, p { margin: 0; }
 #view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--ground); view-transition-name: screen; }
 .scroll {
+  position: relative;
+  isolation: isolate; /* its own layer, so Safari clips the positioned rows inside it */
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -94,6 +96,7 @@ h1, h2, h3, p { margin: 0; }
 .hdr {
   position: sticky;
   top: 0;
+  z-index: 1; /* scrolled rows pass under it, never over it (Safari paints positioned rows above a sticky header) */
   flex-shrink: 0;
   background: var(--green);
   color: #fff;

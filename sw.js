@@ -1,7 +1,7 @@
 // Service worker: keeps the app working without internet.
 // Change VERSION whenever app files change, so phones pick up the new version.
 
-const VERSION = "stock-v4";
+const VERSION = "stock-v5";
 const SHELL = [
   "./",
   "./index.html",
