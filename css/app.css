@@ -38,10 +38,10 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #DCDDE2; }
-/* On a phone the page background only shows at the screen edges, where iOS blurs it into the
-   status bar and the home indicator: green behind the header, white behind the tab bar. */
+/* On a phone the page background only shows at the screen edges: green behind the header,
+   white behind the tab bar. Safari falls back to the background colour for the status bar. */
 @media (max-width: 480px) {
-  html, body { background: linear-gradient(var(--green) 50%, var(--surface) 50%); }
+  html, body { background: linear-gradient(var(--green) 50%, var(--surface) 50%) var(--green); }
 }
 body {
   font-family: "Manrope", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -89,7 +89,11 @@ h1, h2, h3, p { margin: 0; }
 .scroll > .hdr:first-child { margin: 0 -20px; }
 
 /* ---------- Green header ---------- */
+/* Sticky only so Safari 26 colours the status bar from it (it samples fixed or sticky elements
+   at the top edge). Nothing scrolls around it, so it never actually sticks. */
 .hdr {
+  position: sticky;
+  top: 0;
   flex-shrink: 0;
   background: var(--green);
   color: #fff;
@@ -543,7 +547,7 @@ input.switch:checked::after { transform: translateX(20px); }
 .editor .input { height: 50px; border: 1px solid var(--stroke); }
 
 /* ---------- Welcome ---------- */
-.welcome { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: calc(var(--top) + 48px) 24px calc(var(--bottom) + 28px); background: var(--green); color: #fff; }
+.welcome { position: sticky; top: 0; flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: calc(var(--top) + 48px) 24px calc(var(--bottom) + 28px); background: var(--green); color: #fff; }
 .welcome h1 { font-size: 34px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
 .welcome p { font-size: 17px; line-height: 1.5; color: var(--on-green); margin-top: 14px; }
 .welcome .illus-wrap { display: grid; place-items: center; padding: 24px 0; }
