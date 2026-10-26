@@ -38,6 +38,11 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #DCDDE2; }
+/* On a phone the page background only shows at the screen edges, where iOS blurs it into the
+   status bar and the home indicator: green behind the header, white behind the tab bar. */
+@media (max-width: 480px) {
+  html, body { background: linear-gradient(var(--green) 50%, var(--surface) 50%); }
+}
 body {
   font-family: "Manrope", -apple-system, "Segoe UI", Roboto, sans-serif;
   font-weight: 500;
@@ -56,10 +61,12 @@ h1, h2, h3, p { margin: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- App frame ---------- */
+/* Pinned to the screen's edges rather than sized with 100dvh: an iPhone home-screen app
+   leaves the status bar out of 100dvh, which left a band of page background at the bottom. */
 #app {
-  position: relative;
+  position: fixed;
+  inset: 0;
   max-width: 480px;
-  height: 100dvh;
   margin: 0 auto;
   background: var(--ground);
   display: flex;
