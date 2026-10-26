@@ -1,7 +1,7 @@
 // Service worker: keeps the app working without internet.
 // Change VERSION whenever app files change, so phones pick up the new version.
 
-const VERSION = "stock-v2";
+const VERSION = "stock-v3";
 const SHELL = [
   "./",
   "./index.html",
@@ -27,8 +27,11 @@ const SHELL = [
   "./icons/icon-512.png",
 ];
 
+// GitHub Pages lets browsers reuse a file for 10 minutes. "reload" skips that, so a new version
+// never stores the previous version's files.
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  const fresh = SHELL.map((url) => new Request(url, { cache: "reload" }));
+  event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(fresh)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -62,10 +65,11 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== location.origin) return;
 
   // App files: cache first, update in the background, fall back to the app shell offline.
+  // The background update revalidates with the server instead of trusting the browser's own cache.
   event.respondWith(
     caches.open(VERSION).then(async (cache) => {
       const cached = await cache.match(request, { ignoreSearch: true });
-      const fresh = fetch(request).then((response) => {
+      const fresh = fetch(request.mode === "navigate" ? request.url : request, { cache: "no-cache" }).then((response) => {
         if (response.ok) cache.put(request, response.clone());
         return response;
       }).catch(() => cached ?? cache.match("./index.html"));

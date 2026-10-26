@@ -627,3 +627,9 @@ html[data-nav^="tab"]::view-transition-new(tabbar) { animation: none; }
   body { padding: 0; }
   #app { box-shadow: 0 0 0 1px rgba(0, 0, 0, .04); }
 }
+
+/* Réglages → Informations techniques: a quiet fold for diagnosing a phone from a screenshot. */
+.tech { margin-top: 8px; color: var(--ink-2); font-size: 14px; }
+.tech summary { min-height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; list-style: none; }
+.tech summary::-webkit-details-marker { display: none; }
+.tech pre { margin: 0; padding: 14px 16px; border-radius: 14px; background: var(--surface); font: 500 13px/1.6 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre-wrap; color: var(--ink); }

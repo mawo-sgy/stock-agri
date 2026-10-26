@@ -90,8 +90,37 @@ export function render({ state }) {
       <section class="section">
         <button type="button" class="btn btn-text-danger" data-erase>${icon("trash", 20)}Tout effacer</button>
       </section>
+
+      <details class="tech">
+        <summary>Informations techniques</summary>
+        <pre data-tech></pre>
+      </details>
     </div>
   </section>`;
+}
+
+/** Which version runs and what the screen reports: enough to diagnose a layout problem from one screenshot. */
+async function techInfo() {
+  const probe = (css) => {
+    const el = Object.assign(document.createElement("div"), { style: `position:fixed;visibility:hidden;${css}` });
+    document.body.append(el);
+    const r = el.getBoundingClientRect();
+    el.remove();
+    return r;
+  };
+  const px = (n) => Math.round(n);
+  const app = document.getElementById("app").getBoundingClientRect();
+  const versions = "caches" in window ? (await caches.keys()).filter((k) => k.startsWith("stock-")) : [];
+  const ios = navigator.userAgent.match(/OS (\d+)_(\d+)/);
+  return [
+    `Version : ${versions.join(", ") || "aucune (pas de service worker)"}`,
+    `Mode : ${matchMedia("(display-mode: standalone)").matches || navigator.standalone ? "application" : "navigateur"}${ios ? ` · iOS ${ios[1]}.${ios[2]}` : ""}`,
+    `Écran : ${screen.width} × ${screen.height}`,
+    `Fenêtre : ${innerWidth} × ${innerHeight} · visible ${px(visualViewport?.height ?? 0)}`,
+    `100vh ${px(probe("height:100vh").height)} · 100dvh ${px(probe("height:100dvh").height)} · 100lvh ${px(probe("height:100lvh").height)} · fixe ${px(probe("top:0;bottom:0").height)}`,
+    `Zones sûres : haut ${px(probe("height:env(safe-area-inset-top)").height)} · bas ${px(probe("height:env(safe-area-inset-bottom)").height)}`,
+    `Cadre : ${px(app.top)} → ${px(app.bottom)}`,
+  ].join("\n");
 }
 
 export function bind(root, { state, refresh }) {
@@ -178,6 +207,9 @@ export function bind(root, { state, refresh }) {
       eraseAll();
       toast("Prêt pour vos données");
     }
+  });
+  root.querySelector(".tech").addEventListener("toggle", async (event) => {
+    if (event.target.open) root.querySelector("[data-tech]").textContent = await techInfo();
   });
   root.querySelector("[data-erase]").addEventListener("click", async () => {
     const ok = await confirmSheet({ title: "Tout effacer ?", body: "Lots, ventes, acheteurs et journal seront supprimés de ce téléphone. Exportez une sauvegarde avant si vous voulez les garder.", confirm: "Tout effacer", danger: true });
